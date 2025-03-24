@@ -1,0 +1,98 @@
+.cardcontainer {
+    width: 60%;
+    background: #2a242f;
+    padding: 20px;
+    border-radius: 10px;
+}
+.section {
+    margin-bottom: 20px;
+}
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+.stats{
+    display: block;
+}
+.column {
+    flex-direction: column;
+}
+.namecard {
+    display: flex;
+    justify-content: space-between;
+}
+.score-card {
+    background: #3a3342;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.score-card .info {
+    display: flex;
+    flex-direction: column;
+}
+.score-card .info span {
+    font-size: 12px;
+}
+.pp {
+    background: #00000028;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+.mod {
+    background: #ffffff28;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+.rank {
+    font-weight: bold;
+    color: white;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.rank.D { background: #d43737;
+width:30px;
+text-align: center; } /* Red */
+.rank.C { background: #d47037;
+width:30px;
+text-align: center; } /* Orange */
+.rank.B { background: #c5c220;
+width:30px;
+text-align: center; } /* Gold */
+.rank.A { background: #67b930;
+    width:30px;
+    text-align: center; } /* Green */
+.rank.S { background: #3b78d3;
+    width:30px;
+    text-align: center;} /* Yellow */
+.rank.SS { background: #983aaf;
+    width:30px;
+    text-align: center; } /* Pink */
+.rank.SSp { background: #6620d6;
+    width:30px;
+    text-align: center;} /* Purple */
+.show-more {
+    text-align: center;
+    padding: 10px;
+    background: #44384d;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.score-card-left {
+    display: flex;
+    align-items: center;
+}
+.score-card-right {
+    display: flex;
+}

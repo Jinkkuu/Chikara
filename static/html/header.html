@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="/static/css/accountprompt.css">
+<script src="/static/script/login.js"></script>
+<div class="header">
+    <div class="header-left">
+        <img src="https://raw.githubusercontent.com/Jinkkuu/PyQlute/refurn-v3/assets/full-logo.png" alt="Logo">
+        <a href="/"><button>home</button></a>
+        <a href="/download"><button>download</button></a>
+        <a href="/beatmaps"><button>beatmaps</button></a>
+        <a href="/ranking"><button>ranking</button></a>
+    </div>
+    <a id="accountbutton" style="cursor: pointer;">
+    <div class="header-right actualbutton">
+        <h3>{usertag}</h3>
+        <img src="/static/img/profile/guest.png" id="userpfp" alt="Right Image">
+    </div>
+    </a>
+</div>
+<div id="menuprompt" class="accountprompt">
+    <div id="loginForm" class="modal-content">
+        <span id="loginprompt">
+        <h3 style="margin-bottom: 15px;">Sign in to enter <3</h3>
+        <p id="login_notice_text" style="margin-bottom: 10px;margin-top: 5px;color: yellow;"></p>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <h3 style="margin-top: 20px;">No Account?</h3>
+        <p style="margin-bottom: 10px;margin-top: 10px;">if you wanna join, download our game first!</p>
+        <a href="/download"><button class="login-btn">Download Qlute</button></a>
+        </span>
+        <span id="controlpanel">
+            <p style="margin-bottom: 10px;">Welcome back, {usertag}!</p>
+            <a href="/user/{usertag}"><button class="login-btn">My Profile</button></a>
+            <!--a href="/team/woogiesquad"><button class="login-btn">My Team</button></a -->
+            <a href="/settings"><button class="login-btn">Settings</button></a>
+        </span>
+    </div>
+</div>
