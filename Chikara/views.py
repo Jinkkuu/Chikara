@@ -364,7 +364,7 @@ def get_userscore(user='',recent=True,mini=False,limit=50):
         for a in modsaliasab:
             if a in tmp['mods']:
                 modse += f'<span class="mod">{a}</span>'
-        peak += scorecard.replace("{date}",timeest).replace("{title}",tmp['beatmapname']).replace("{artist}",tmp['artist']).replace("{rank}",gradet).replace("{difficulty}",tmp['beatmapdiff']).replace("{points}",str(int(getpoint(tmp['max'],tmp['great'],tmp['meh'],tmp['bad'],tmp['multiplier'],combo=tmp['combo'])))).replace("{weighted_points}",weighted).replace("{weighted_percentage}",weightedp).replace("{mods}",modse)
+        peak += scorecard.replace("{date}",timeest).replace("{title}",str(tmp['beatmapname'])).replace("{artist}",str(tmp['artist'])).replace("{rank}",gradet).replace("{difficulty}",str(tmp['beatmapdiff'])).replace("{points}",str(int(getpoint(tmp['max'],tmp['great'],tmp['meh'],tmp['bad'],tmp['multiplier'],combo=tmp['combo'])))).replace("{weighted_points}",weighted).replace("{weighted_percentage}",weightedp).replace("{mods}",str(modse))
         pek-=0.02
     if tols==0:
         peak +='<h3 class="bar">No Recent Plays -n-</h3>'
