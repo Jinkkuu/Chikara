@@ -25,7 +25,9 @@ urlpatterns = [
     path('apiv2/', views.api, {'command': ''}),
     path('user/<path:user>', views.user),
     path('settings', usersettings.usersettings),
-    path('', views.base, {'uri': ''}),
+    path('ranking', views.ranking),
+    path('ranking/<path:command>', views.ranking),
     path('<path:uri>', views.base),
+    path('', views.base, {'uri': ''}),
 ]
 #path('apiv2/<path:uri>', views.api),

@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.success) {
                 login_notice_text.textContent = 'Successful!';
-                //window.location.href = '/'; // Redirect to homepage
+                window.location.href = '/'; // Redirect to homepage
                 //modal.style.display = "none";
                 //form.reset();
             } else {

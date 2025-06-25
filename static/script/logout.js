@@ -1,4 +1,5 @@
-document.getElementById("logout-button").addEventListener("click", function() {
+const logoutb = document.getElementById("logout")
+logoutb.addEventListener("click", function() {
     // Function to delete cookies
     function deleteCookie(name) {
         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

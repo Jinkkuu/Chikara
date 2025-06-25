@@ -83,8 +83,10 @@ DATABASES = {
         'PASSWORD': 'Qlutaismyfav$23',  # Your database password
         'HOST': 'localhost',  # Change if the database is on another server
         'PORT': '3306',  # Default MariaDB/MySQL port
+        'CONN_MAX_AGE': 30,
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'connect_timeout': 30  # Set connection timeout in seconds
         }
     }
 }

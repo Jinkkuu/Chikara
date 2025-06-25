@@ -125,6 +125,57 @@ def getspp(offset=0,limit=0):
                 break
             yield name,pp
 
+def get_leaderboard(id): # Leaderboard processing
+        x=[]
+        e=0
+        for a in getscores(beatmapid=id):
+            points = getpoint(int(a['max']),int(a['great']),int(a['meh']),int(a['bad']),float(getmult(a['mods'])),combo=a['combo'])
+            maxpoints = getpoint(int(a['max'])+int(a['great'])+int(a['meh'])+int(a['bad']),0,0,0,float(getmult(a['mods'])),combo=a['combo'])
+            data = {
+    "username": a['username'],
+    "points": points,
+    "score": getsimscore(points,maxpoints,float(getmult(a['mods'])),type=int),
+    "combo": a['combo'],
+    "MAX": a['max'],
+    "GOOD": a['great'],
+    "MEH": a['meh'],
+    "BAD": a['bad'],
+    "mods":a['mods'].replace('AT',''),
+    "time": int(a['created'].timestamp())
+            }
+            x.append(data)
+            e+=1
+        spp=0
+        if spp:
+            if len(result)>0:
+                template=result[0]
+            else:
+                template=(100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,)
+            #print(template)
+            for a in open('userlist').read().rstrip('\n').split('\n')[::-1]:
+                if e>49:
+                    break
+                else:
+                    mult=1.2
+                    pp=randint(1,int(template[14]*mult))
+                    data = {
+            "username": a,
+            "points": pp,
+            "score": getsimscore(pp,template[14],mult,type=int),
+            "combo": randint(1,int(template[14]//perfbom)),
+            "MAX": randint(1,int(template[14]//perfbom)),
+            "GOOD": randint(1,int(template[14]//perfbom)),
+            "MEH": randint(1,int(template[14]//perfbom)),
+            "BAD": randint(1,int(template[14]//perfbom)),
+            "time": int(time.time()-(e*16000))
+                    }
+                    x.append(data)
+                e+=1
+        x=sorted(x, key=lambda x: x['points'],reverse=True)
+
+        return x
+
+
 def getstat(command, useris, raw=False, page=1):  # Added leveltemp parameter with default value
     if command == 'score':
         user = User.objects.filter(username=useris).first()
@@ -424,9 +475,26 @@ def checklogin(usr,pwd,signup=False,id=0):
     else:
         return (0,fake)
 
+        
+def getsimscore(achieved,max,mult,type=str):
+    mult=getmult(mult)
+    mult=1000000*mult
+    try:
+        tmp=int((float(achieved)/float(max))*mult)
+    except Exception:
+        pass
+    if max==0 and type==int:
+        return 0
+    elif max==0 and type!=int:
+        return str(0)
+    elif type==int:
+        return tmp
+    else:
+        return format(tmp,',')
+
 # API
 
-def api(request,command):
+def api(request,command,value=None):
     command=command.split('/')
     if len(command)>0 and request.method == "POST":
         if command[0]=='signup':
@@ -455,7 +523,7 @@ def api(request,command):
                     response =  JsonResponse({"success": False}, status=401)
             except json.JSONDecodeError:
                 response = JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
-            return response
+        return response
     elif len(command)>0 and request.method == "GET":
         if command[0]=='listmedal':
             username=command[1]
@@ -466,6 +534,13 @@ def api(request,command):
                 return HttpResponse(json.dumps(data))
             except Exception as err:
                 return HttpResponse(err)
+        elif command[0]=='getleaderboard' and not request.META.get('HTTP_BEATMAPID', '') == "":
+            try:
+                return JsonResponse(get_leaderboard(request.META.get('HTTP_BEATMAPID', '')),safe=False)
+            except Exception as error:
+                return JsonResponse({"error" : 1,"reason": str(error)})
+        elif command[0]=='getleaderboard':
+            return JsonResponse({"error" : 0,"reason": "No BeatmapID"})
         elif command[0]=='createroom':
             login=command[1:]
             currently=urllib.parse.unquote(login[5])
@@ -491,10 +566,6 @@ def api(request,command):
         elif command[0]=='getbeatmap':
             exit()
             print(json.dumps({'RankedStatus':1,'BPM':19000}))
-        elif command[0]=='getleaderboard':
-            print(json.dumps(get_leaderboard(login[1])))
-#            for a in result:
-#                print(a)
         elif command[0]=='menunotice':
             f=open('motd').read().rstrip('\n').split('\n')
             r=randint(1,len(f))
@@ -824,48 +895,47 @@ def user(request, user):
     html += str(tickle)
     return HttpResponse(html)
 
+def ranking(command=""):
+    htmltemp = header(request) + open(str(BASE_DIR) + "/" + STATIC_ROOT + "/html/ranking.html").read()
+    html = ''
+    users, tols = getstat('ranking', None, page=1)        
+    if not tols:
+        html += "<h3 class='bar'>Someone needs to play more! (｡•̀ᴖ•́｡)</h3>"
+    else:
+        html += "<table class='tablebar'><tr><th>Rank</th><th>Username</th><th>Points</th><th>Score</th><th>Accuracy</th><th>MAX</th><th>GREAT</th><th>MEH</th><th>BAD</th></tr>"
+        rank = 0
+    if command != "":
+        html = str(command)
+    for user in users:
+        rank += 1
+        points = user.ranked_points if user.ranked_points is not None else 0
+        score = user.ranked_score if user.ranked_score is not None else 0
+        acc = user.accuracy if user.accuracy is not None else 0
+        max_hit = user.max if user.max is not None else 0
+        great = user.great if user.great is not None else 0
+        meh = user.meh if user.meh is not None else 0
+        bad = user.bad if user.bad is not None else 0
+        html += f"<tr><td class='lbar'>#{rank}</td>"
+        html += f"<td class='cbar'><a href='/user/{user.username}'>{urllib.parse.unquote(user.username)}</a></td>"
+        html += f"<td class='cbar'>{points:,}</td>"
+        html += f"<td class='cbar'>{score:,}</td>"
+        html += f"<td class='cbar'>{acc}%</td>"
+        html += f"<td class='cbar'>{max_hit:,}</td>"
+        html += f"<td class='cbar'>{great:,}</td>"
+        html += f"<td class='cbar'>{meh:,}</td>"
+        html += f"<td class='ebar'>{bad:,}</td></tr>"
+    html += "</table>"
+    html += "<center>"
+    for a in range(1, 11):
+        html += f"<a href='../ranking/{a}'><button class='minibutton'>{a}</button></a> "        
+    html += "</center></div></div><br>"
+    htmltemp = htmltemp.replace('{entry}',html)
+    return HttpResponse(htmltemp)
 
-def base(request, uri):
-    if uri == "":
+def base(request, uri,command=""):
+    if uri == "" and not checklogin(request.COOKIES.get('username', None), request.COOKIES.get('password', None))[0]:
         return HttpResponse(header(request) + open(str(BASE_DIR) + "/" + STATIC_ROOT + "/html/home.html").read())
+    elif uri == "" and checklogin(request.COOKIES.get('username', None), request.COOKIES.get('password', None))[0]:
+        return HttpResponse(header(request) + open(str(BASE_DIR) + "/" + STATIC_ROOT + "/html/homes.html").read().replace("{usertag}",request.COOKIES.get('username', None)).replace("{usercount}",str(format(User.objects.last().id,","))))
     elif uri == "download":
         return HttpResponse(header(request) + open(str(BASE_DIR) + "/" + STATIC_ROOT + "/html/download.html").read())
-    elif uri == "ranking":
-        htmltemp = header(request) + open(str(BASE_DIR) + "/" + STATIC_ROOT + "/html/ranking.html").read()
-        html = ''
-        users, tols = getstat('ranking', None, page=1)
-        
-        if not tols:
-            html += "<h3 class='bar'>Someone needs to play more! (｡•̀ᴖ•́｡)</h3>"
-        else:
-            html += "<table class='tablebar'><tr><th>Rank</th><th>Username</th><th>Points</th><th>Score</th><th>Accuracy</th><th>MAX</th><th>GREAT</th><th>MEH</th><th>BAD</th></tr>"
-            rank = 0
-            
-        for user in users:
-            rank += 1
-            points = user.ranked_points if user.ranked_points is not None else 0
-            score = user.ranked_score if user.ranked_score is not None else 0
-            acc = user.accuracy if user.accuracy is not None else 0
-            max_hit = user.max if user.max is not None else 0
-            great = user.great if user.great is not None else 0
-            meh = user.meh if user.meh is not None else 0
-            bad = user.bad if user.bad is not None else 0
-
-            html += f"<tr><td class='lbar'>#{rank}</td>"
-            html += f"<td class='cbar'><a href='/user/{user.username}'>{urllib.parse.unquote(user.username)}</a></td>"
-            html += f"<td class='cbar'>{points:,}</td>"
-            html += f"<td class='cbar'>{score:,}</td>"
-            html += f"<td class='cbar'>{acc}%</td>"
-            html += f"<td class='cbar'>{max_hit:,}</td>"
-            html += f"<td class='cbar'>{great:,}</td>"
-            html += f"<td class='cbar'>{meh:,}</td>"
-            html += f"<td class='ebar'>{bad:,}</td></tr>"
-
-                    
-        html += "</table>"
-        for a in range(1, 11):
-            html += f"<a href='../ranking/{a}'><button class='minibutton'>{a}</button></a> "
-        
-        html += "</div></div><br>"
-        htmltemp = htmltemp.replace('{entry}',html)
-        return HttpResponse(htmltemp)
