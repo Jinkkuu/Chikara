@@ -895,7 +895,7 @@ def user(request, user):
     html += str(tickle)
     return HttpResponse(html)
 
-def ranking(command=""):
+def ranking(request, command=""):
     htmltemp = header(request) + open(str(BASE_DIR) + "/" + STATIC_ROOT + "/html/ranking.html").read()
     html = ''
     users, tols = getstat('ranking', None, page=1)        
